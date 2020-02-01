@@ -1,9 +1,9 @@
 # VIM
 
-Some scripts for vim
+Some scripts for vim. This code is not supposed to be robust not planned to be maintained in any particular way. Use at your own risks!
 
-cplusplus.vim
-=============
+autoload/cplusplus.vim
+======================
 
 1. **cplusplus#StartImplementation**
 
