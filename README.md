@@ -5,7 +5,7 @@ Some scripts for vim
 cplusplus.vim
 =============
 
-1. **cplusplus#StartImplemenation**
+1. **cplusplus#StartImplementation**
 
 - **Purpose:**
 Copy the signature of a method from the header to the source file, ready to be implemented
