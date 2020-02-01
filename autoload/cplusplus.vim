@@ -52,6 +52,11 @@ endfunction
 function! cplusplus#FindAboveMethod(cursorPosition)
     call setpos('.', a:cursorPosition)
 
+    " Go to the above line
+    execute "normal! k"
+
+    " Search for the next method, just above the current one (search
+    " backwards)
     let l:previousMethodNamePosition = search('[_a-zA-Z0-9]\+(', 'b')
 
     " If the index of the line containing the previous method is bigger than
@@ -62,7 +67,6 @@ function! cplusplus#FindAboveMethod(cursorPosition)
     else
         let l:previousMethodName = getline(l:previousMethodNamePosition)
         let l:previousMethodName = matchstr(l:previousMethodName, '[_a-zA-Z0-9]\+(')
-        let l:previousMethodName = substitute(l:previousMethodName, "(", "", "")
         return l:previousMethodName
     endif
 
