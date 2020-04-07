@@ -18,3 +18,13 @@ Copy the signature of a method from the header to the source file, ready to be i
 ```
 autocmd FileType c,cpp,h,hpp :nnoremap <buffer> <localleader>si :call cplusplus#StartImplementation()<cr>
 ```
+
+2. **cplusplus#CallClangFormatCurrentBuffer**
+
+- **Purpose**
+Call clang-format for the current buffer and edit the buffer to see the changes
+
+- **The mapping that I use in my .vimrc to use the above mentioned function is:**
+```
+autocmd FileType h,c,hpp,cpp :nnoremap <buffer> <F5> :call cplusplus#CallClangFormatCurrentBuffer()<cr>
+```

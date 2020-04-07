@@ -155,3 +155,12 @@ function! cplusplus#StartImplementation()
     " Set back the cursor position
     call setpos('.', l:cursorPosition)
 endfunction
+
+
+function! cplusplus#CallClangFormatCurrentBuffer()
+    " call clang-format
+    call system("clang-format -i " .  shellescape(expand("%")))
+
+    " Update current buffer after changes
+    execute  ":edit"
+endfunction
