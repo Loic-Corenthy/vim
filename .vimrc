@@ -9,8 +9,10 @@ endif
 " Use Vundle if it's available
 " Setup Vundle plugin manager
 filetype off
+
 " Add my own c++ plugin
 set runtimepath+=~/.vim/bundle/cplusplus.vim
+
 set runtimepath+=~/.vim/bundle/Vundle.vim/
 call vundle#begin()
 " Installs plugin manager
@@ -82,6 +84,13 @@ set statusline+=%04l      " Current line
 set statusline+=/         " Separator
 set statusline+=%04L      " Total linest
 set laststatus=2          " Mention that the status line is always visible
+
+" set rtp+={repository_root}/powerline/bindings/vim
+" python3 from powerline.vim import setup as powerline_setup
+" python3 powerline_setup()
+" python3 del powerline_setup
+
+
 
 " Enable mouse support
 set mouse=a
@@ -164,9 +173,9 @@ nnoremap <down> <nop>
 
 " Deactivate navigation with arrow keys in edit mode
 inoremap <up> <nop>
+inoremap <down> <nop>
 inoremap <left> <nop>
 inoremap <right> <nop>
-inoremap <down> <nop>
 
 " Shortcuts for git within vim {{{
 nnoremap <silent> <leader>gs :Gstatus<CR>
@@ -216,8 +225,10 @@ augroup filetype_tex
 " 	" Latex style quotes around selected region
 " 	autocmd FileType *tex :vnoremap <buffer> <localleader>' xi``<esc>pa''<esc>a
     " Latex style quotes around current word in normal mode
-    autocmd FileType tex :nnoremap <Leader>' viw<esc>a''<esc>hbi``<esc>lel
-    autocmd FileType tex :vnoremap <Leader>' c``''<esc>hhp
+    autocmd FileType tex :nnoremap <buffer> <Leader>' viw<esc>a''<esc>hbi``<esc>lel
+    autocmd FileType tex :vnoremap <buffer> <Leader>' c``''<esc>hhp
+    " Make highlighted text bold
+    autocmd FileType tex :vnoremap <buffer> <Leader>bf di\textbf{}<esc>hpll
  augroup END
 " }}}
 
@@ -271,28 +282,54 @@ augroup END
 " Mappings for c++ {{{
 augroup filetype_cpp
     autocmd!
-	autocmd BufNewFile,BufRead *.[hc]pp :set nospell
+	autocmd BufNewFile,BufRead h,c,hpp,cpp :set nospell
+    autocmd BufWritePre h,c,hpp,cpp :%s/\s\+$//e
     " comment current line
- 	autocmd FileType c,cpp,h,hpp :nnoremap <buffer> <localleader>cc I//<space><esc>
+ 	autocmd FileType h,c,hpp,cpp :nnoremap <buffer> <localleader>cc I//<space><esc>
+ 	autocmd FileType h,c,hpp,cpp :vnoremap <buffer> <localleader>cc <esc>:'<,'>s/\(.\)/\/\/ \1/<cr> :nohlsearch<cr>
     " uncomment current line
- 	autocmd FileType c,cpp,h,hpp :nnoremap <buffer> <localleader>co 0wxxx
+ 	autocmd FileType h,c,hpp,cpp :nnoremap <buffer> <localleader>co 0wxxx
     " comment current and paste same text below
-    autocmd FileType c,cpp,h,hpp :nnoremap <buffer> <localleader>cv yypk0wi// <esc>j0w
+    autocmd FileType h,c,hpp,cpp :nnoremap <buffer> <localleader>cv yypk0wi// <esc>j0w
     " Switch between files with the shortcuts used to switch between header and
     " source file in Xcode
     " nnoremap <C-S-Up> :n
     " nnoremap <C-S-Down> :prev
-    autocmd FileType c,cpp,h,hpp :nnoremap <buffer> <C-S-Up> :e #<cr>
-    autocmd FileType c,cpp,h,hpp :nnoremap <buffer> <C-S-Down> :e #<cr>
+    autocmd FileType h,c,hpp,cpp :nnoremap <buffer> <C-S-Up> :e #<cr>
+    autocmd FileType h,c,hpp,cpp :nnoremap <buffer> <C-S-Down> :e #<cr>
     " Open the cpp related to the current hpp file
-    autocmd FileType c,cpp,h,hpp :nnoremap <buffer> <localleader>oc :split %:r.cpp<cr>
+    autocmd FileType h,c,hpp,cpp :nnoremap <buffer> <localleader>oc :split %:r.cpp<cr>
     " Open the hpp related to the current cpp file
-    autocmd FileType c,cpp,h,hpp :nnoremap <buffer> <localleader>oh :split %:r.hpp<cr>
+    autocmd FileType h,c,hpp,cpp :nnoremap <buffer> <localleader>oh :split %:r.hpp<cr>
     " Copy the signature of a method from the header to the source file, ready
     " to be implemented
-    autocmd FileType c,cpp,h,hpp :nnoremap <buffer> <localleader>si :call cplusplus#StartImplementation()<cr>
+    autocmd FileType h,c,hpp,cpp :nnoremap <buffer> <localleader>si :call cplusplus#StartImplementation()<cr>
+    " Remove all the std:: on the current line
+    autocmd FileType h,c,hpp,cpp :nnoremap <buffer> <localleader>rs :.s/std:://g<cr> :nohlsearch<cr>
+    autocmd FileType h,c,hpp,cpp :vnoremap <buffer> <localleader>rs <esc>:'<,'>s/std:://g<cr> :nohlsearch<cr>
+    " Go to declaration / definition
+    autocmd FileType h,c,hpp,cpp :nnoremap <buffer> <F2> :YcmCompleter GoTo<cr>
+    autocmd FileType h,c,hpp,cpp :vnoremap <buffer> <F2> :YcmCompleter GoTo<cr>
+    " Show the type of a variable
+    autocmd FileType h,c,hpp,cpp :nnoremap <buffer> <F3> :YcmCompleter GetType<cr>
+    " Call Fix It
+    autocmd FileType h,c,hpp,cpp :nnoremap <buffer> <F4> :YcmCompleter FixIt<cr>
+    " Formatting with clang-format
+    autocmd FileType h,c,hpp,cpp :nnoremap <buffer> <F5> :call cplusplus#CallClangFormatCurrentBuffer()<cr>
 augroup END
 " }}}
+
+
+" Mappings for cmake {{{
+augroup filetype_cmake
+    autocmd!
+	autocmd BufNewFile,BufRead cmake :set nospell
+    autocmd BufWritePre cmake :%s/\s\+$//e
+    " Formatting with clang-format
+    autocmd FileType cmake :nnoremap <buffer> <F5> :call system('cmake-format -i ' . shellescape(expand('%:p')))<cr>:e!<cr>
+augroup END
+" }}}
+
 
 " filetype plugin on 
 
@@ -317,7 +354,7 @@ endif
 let g:ycm_semantic_triggers.tex = g:vimtex#re#youcompleteme
 
 " Go to with YCM
-nnoremap <leader>jd :YcmCompleter GoTo<CR>
+"nnoremap <leader>jd :YcmCompleter GoTo<CR>
 
 " load ycm conf by default
 let g:ycm_confirm_extra_conf=0
